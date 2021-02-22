@@ -8,21 +8,11 @@
   #include <BLEUtils.h>
   #include <BLE2902.h>
 
-  #include <Adafruit_NeoPixel.h>
-
-    int freq = 38000;
-    int channel = 0;
-    int resolution = 8;
+ 
     
  //   #define PIN_IR 3   for testing
-   #define PIN_DETECT 34
+
    #define PIN_STATUS 2
-   #define PIN        25
-   #define NUMPIXELS 1
-   #define Pushbutton    18
-
- Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
 
   String output ="LOW"; // Output to App. Notify.
 
@@ -56,7 +46,7 @@
 
   Serial.begin(115200);
   Serial.println("JomHadir iSuhu001 1.0.1");
-  pinMode(PIN_DETECT, INPUT);
+//  pinMode(PIN_DETECT, INPUT);
   pinMode(PIN_STATUS, OUTPUT);
 
 
