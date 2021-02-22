@@ -7,11 +7,25 @@
   #include <BLEServer.h>
   #include <BLEUtils.h>
   #include <BLE2902.h>
-  
+  #define IRTrigger 12 //  pin12 PushButton
+  #include <Adafruit_MLX90614.h>
+  #include <IRremote.h>
   #include <Adafruit_NeoPixel.h>
 
- Adafruit_NeoPixel pixels(1, 25, NEO_GRB + NEO_KHZ800);
+    int freq = 38000;
+    int channel = 0;
+    int resolution = 8;
+    
+ //   #define PIN_IR 3   for testing
+   #define PIN_DETECT 34
+   #define PIN_STATUS 2
+   #define PIN        25
+   #define NUMPIXELS 1
+   #define Pushbutton    18
 
+ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+ Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
   String output ="LOW"; // Output to App. Notify.
 
@@ -28,8 +42,8 @@
   void onConnect(BLEServer* pServer) {
     deviceConnected = true;
      Serial.print("Bluetooth Connected");
-      pixels.clear();
-      pixels.setPixelColor(0, pixels.Color(0, 200, 0));
+        pixels.clear();
+      pixels.setPixelColor(0, pixels.Color(200, 100, 0));
       pixels.show();
      delay(1000);
 
@@ -39,7 +53,7 @@
     deviceConnected = false;
       Serial.print("Bluetooth Disconnected");
        pixels.clear();
-       pixels.setPixelColor(0, pixels.Color(200, 0, 0));
+       pixels.setPixelColor(0, pixels.Color(200, 0, 200));
        pixels.show();
       delay(1000);
   }
@@ -48,9 +62,18 @@
   void setup() {
 
   Serial.begin(115200);
-  Serial.println("JomHadir iSuhu001 1.0.2");
-
-   BLEDevice::init("iSuhu132");
+  Serial.println("JomHadir iSuhu001 1.0.1");
+  pinMode(PIN_DETECT, INPUT);
+  pinMode(PIN_STATUS, OUTPUT);
+  pinMode(IRTrigger, OUTPUT);
+  pinMode(Pushbutton, INPUT);
+  ledcSetup(channel, freq, resolution);
+  ledcAttachPin(IRTrigger, channel);
+  ledcWriteTone(channel, 38000);
+  
+    mlx.begin(); 
+   // Create the BLE Device
+   BLEDevice::init("iSuhu018");
    
     pServer = BLEDevice::createServer();
     pServer->setCallbacks(new MyServerCallbacks());
@@ -82,61 +105,45 @@
     Serial.println("Waiting a client connection to notify...");
     
     pixels.begin();
-    pixels.setPixelColor(0, pixels.Color(200, 200, 200));
-    pixels.show();
+    pixels.clear();
+    pixels.setPixelColor(0, pixels.Color(100, 100, 0));
+    pixels.show();  
     
 }
 
   
 
-    
-  String val;
-
-  
   void loop() {
-  String readString;
+  // notify changed value
+//     Serial.println(digitalRead(PIN_DETECT));
+//     Serial.print("Pushbutton ");
+//     Serial.println(digitalRead(Pushbutton));
+    String readString;
   while (Serial.available())
   {
     if (Serial.available() >0)
     {
       char c = Serial.read();
-
       readString += c;
-      if (c==0x6f)  val="35.6";
-  else if (c==0x70)  val="35.7";
-  else if (c==0x71)  val="35.8";
-  else if (c==0x72)  val="35.9";
-  else if (c==0x73)  val="36.0";
-  else if (c==0x74)  val="36.1";
-  else if (c==0x75)  val="36.2";
-  else if (c==0x76)  val="36.3";
-  else if (c==0x77)  val="36.4";
-  else if (c==0x78)  val="36.5";
-  else if (c==0x79)  val="36.6";
-  else if (c==0x7A)  val="36.7";
-  else if (c==0x7B)  val="36.8";
-  else if (c==0x7C)  val="36.9";
-  else if (c==0x7D)  val="37.0";
-  else if (c==0x7E)  val="37.1";
-  else if (c==0x7F)  val="37.2";
-  else if (c==0x80)  val="37.3";
-  else if (c==0x81)  val="37.4";
-  else if (c==0x82)  val="37.5";
-  else  val="0.00";
-  Serial.println(val);
     }
+        //BTSerial.println(readString);
+
   }
-  
+  int x=readString.lastIndexOf("T body = ");
+
+  Serial.println(x);
      
   if (deviceConnected) {
-  
 
-    if (val!="0.00")
+  String val =readString.substring(x+9,x+14);
+    if (x!=-1)
     {
-        output=val;
+      Serial.println(val);
+      if(val.toFloat()<39.0 && val.toFloat()>35.0){
+         output=val;
+      }
         pCharacteristic->setValue(output.c_str()); // Output
-        pCharacteristic->notify();
-        val="0.00";       
+        pCharacteristic->notify();        
         }
      }
    
@@ -151,9 +158,8 @@
   }
   // connecting
   if (deviceConnected && !oldDeviceConnected) {
+  
       // do stuff here on connecting
       oldDeviceConnected = deviceConnected;
   }
-
-  delay(1);
   }
