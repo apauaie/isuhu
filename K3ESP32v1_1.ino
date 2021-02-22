@@ -7,9 +7,7 @@
   #include <BLEServer.h>
   #include <BLEUtils.h>
   #include <BLE2902.h>
-  #define IRTrigger 12 //  pin12 PushButton
-  #include <Adafruit_MLX90614.h>
-  #include <IRremote.h>
+
   #include <Adafruit_NeoPixel.h>
 
     int freq = 38000;
@@ -25,7 +23,6 @@
 
  Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
- Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
   String output ="LOW"; // Output to App. Notify.
 
@@ -42,9 +39,7 @@
   void onConnect(BLEServer* pServer) {
     deviceConnected = true;
      Serial.print("Bluetooth Connected");
-        pixels.clear();
-      pixels.setPixelColor(0, pixels.Color(200, 100, 0));
-      pixels.show();
+
      delay(1000);
 
   };
@@ -52,9 +47,7 @@
   void onDisconnect(BLEServer* pServer) {
     deviceConnected = false;
       Serial.print("Bluetooth Disconnected");
-       pixels.clear();
-       pixels.setPixelColor(0, pixels.Color(200, 0, 200));
-       pixels.show();
+
       delay(1000);
   }
  };
@@ -65,13 +58,9 @@
   Serial.println("JomHadir iSuhu001 1.0.1");
   pinMode(PIN_DETECT, INPUT);
   pinMode(PIN_STATUS, OUTPUT);
-  pinMode(IRTrigger, OUTPUT);
-  pinMode(Pushbutton, INPUT);
-  ledcSetup(channel, freq, resolution);
-  ledcAttachPin(IRTrigger, channel);
-  ledcWriteTone(channel, 38000);
-  
-    mlx.begin(); 
+
+
+
    // Create the BLE Device
    BLEDevice::init("iSuhu018");
    
@@ -104,10 +93,7 @@
     BLEDevice::startAdvertising();
     Serial.println("Waiting a client connection to notify...");
     
-    pixels.begin();
-    pixels.clear();
-    pixels.setPixelColor(0, pixels.Color(100, 100, 0));
-    pixels.show();  
+ 
     
 }
 
