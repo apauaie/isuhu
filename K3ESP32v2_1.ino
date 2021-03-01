@@ -8,9 +8,7 @@
   #include <BLEUtils.h>
   #include <BLE2902.h>
   
-  #include <Adafruit_NeoPixel.h>
 
- Adafruit_NeoPixel pixels(1, 25, NEO_GRB + NEO_KHZ800);
 
 
   String output ="LOW"; // Output to App. Notify.
@@ -28,9 +26,7 @@
   void onConnect(BLEServer* pServer) {
     deviceConnected = true;
      Serial.print("Bluetooth Connected");
-      pixels.clear();
-      pixels.setPixelColor(0, pixels.Color(0, 200, 0));
-      pixels.show();
+
      delay(1000);
 
   };
@@ -38,9 +34,7 @@
   void onDisconnect(BLEServer* pServer) {
     deviceConnected = false;
       Serial.print("Bluetooth Disconnected");
-       pixels.clear();
-       pixels.setPixelColor(0, pixels.Color(200, 0, 0));
-       pixels.show();
+
       delay(1000);
   }
  };
@@ -50,7 +44,7 @@
   Serial.begin(115200);
   Serial.println("JomHadir iSuhu001 1.0.2");
 
-   BLEDevice::init("iSuhu132");
+   BLEDevice::init("iSuhu101");
    
     pServer = BLEDevice::createServer();
     pServer->setCallbacks(new MyServerCallbacks());
@@ -81,9 +75,7 @@
     BLEDevice::startAdvertising();
     Serial.println("Waiting a client connection to notify...");
     
-    pixels.begin();
-    pixels.setPixelColor(0, pixels.Color(200, 200, 200));
-    pixels.show();
+
     
 }
 
