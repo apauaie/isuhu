@@ -44,7 +44,7 @@
   Serial.begin(115200);
   Serial.println("JomHadir iSuhu001 1.0.2");
 
-   BLEDevice::init("iSuhu101");
+   BLEDevice::init("iSuhu108");
    
     pServer = BLEDevice::createServer();
     pServer->setCallbacks(new MyServerCallbacks());
